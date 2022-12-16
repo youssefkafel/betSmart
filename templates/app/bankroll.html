@@ -1,0 +1,75 @@
+{% extends 'app/dashboard.html' %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+{% block body %}
+    <div class="row py-3 my-3">
+        <div class="col-6">
+            <canvas id="myChart" style="width:100%;max-width:400px"></canvas>
+        </div>
+        <div class="col-6">
+            {% for bankroll in bankrolls %}
+                <h2>Starting Balance: {{ bankroll.initial_balance }}</h2>
+                <h2>Current Balance: {{ bankroll.balance }}</h2>
+                <h2>Total Profit: {{ bankroll.profit }}</h2>
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <script>
+
+
+        new Chart("myChart", {
+            type: 'doughnut',
+            data: {
+                datasets: [
+                    {
+                        {% for bankroll in bankrolls %}
+                            data: [{{ bankroll.win_count }}, {{ bankroll.loss_count }}],
+                            backgroundColor: [
+                                'rgb(75, 192, 192)',
+                                'rgb(255, 99, 132)',
+                            ],
+                            },
+                            ],
+                            labels: ['Wins', 'Losses'],
+                            },
+                            options: {
+                                plugins: {
+                                    datalabels: {
+                                        formatter: (value) => {
+                                            return value + '%';
+                                        },
+                                    },
+                                },
+                            },
+                            });
+                        {% endfor %}
+    </script>
+
+
+
+    {% for bet in bets %}
+        <div class="row rounded shadow py-3 my-3">
+            <div class="col col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                <h4>{{ bet }}</h4>
+                <h4>Result: {{ bet.result }} </h4>
+                <h4>Profit: {{ bet.profit }}</h4>
+                <p><small>Created: {{ bet.created_at }}</small></p>
+            </div>
+            <div class="col col-md-4 text-md-end text-sm-start">
+                <a class="btn btn-outline-primary" href="{{ bet.bankroll_id }}"><i
+                        class="fa-solid fa-arrow-right"></i></a>
+                <a href="" class="btn btn-outline-danger"><i class="fa fa-times" aria-hidden="true"></i></a>
+            </div>
+        </div>
+    {% empty %}
+        <div class="py-3 my-3">
+            <h3>No bets, create one now</h3>
+        </div>
+
+
+
+
+    {% endfor %}
+{% endblock %}
